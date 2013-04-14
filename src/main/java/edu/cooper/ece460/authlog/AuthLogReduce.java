@@ -30,25 +30,17 @@ public class AuthLogReduce extends Reducer<Text, Text, Text, Text> {
 	private void daemonReduce(Text key, Text value, Context context) 
 		throws IOException, InterruptedException 
 	{
-		String daemon = key.toString();
+		String daemon = key.toString().toLowerCase();
 		String line = value.toString();
 
-		switch(daemon.toLowerCase()) {
-		case "crond":
-			// Do something with line (e.g., call a function)
-			break;
-		case "login":
+		if (daemon == "login") {
 			context.write(key, new Text(line)); // placeholder
-			break;
-		case "sudo":
-			break;
-		case "gdm-binary":
-			break;
-		case "sshd":
-			break;
-		default:
-			break;
 		}
+		else if (daemon == "crond") {
+			// Do something with line (e.g., call a function)
+		}
+
+		context.write(key, value); // placeholder
 	}
 
 }

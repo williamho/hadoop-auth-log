@@ -32,6 +32,8 @@ public class AuthLogMap extends Mapper<LongWritable, Text, Text, Text> {
 		int splitPos = daemon.indexOf("[");
 		if (splitPos >= 0)
 			daemon = daemon.substring(0, splitPos);
+		else	
+			daemon = daemon.substring(0, daemon.length()-1); // Remove trailing :
 
 		context.write(new Text(daemon), new Text(line));
 	}
