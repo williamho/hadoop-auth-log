@@ -1,5 +1,8 @@
-Parsing auth.log with Hadoop
-============================
+Analyzing auth.log with Hadoop
+==============================
+
+Process `auth.log` files (presumably pulled from multiple nodes with Flume) 
+using Hadoop to output relevant statistics.
 
 ##Build
 
@@ -23,9 +26,14 @@ Example:
 ###Shell script
 
 The shell script `run.sh` in the root directory can be used to perform the
-above steps. The HDFS output directory is automatically deleted by the script.
+above steps. The HDFS output directory is automatically deleted by the script 
+before starting the Hadoop job.
 
 	./run.sh [hdfs-input-dir] [hdfs-output-dir] [local-output-dir]
 
 Default values are `authlog_in`, `authlog_out`, and `output`, respectively.
+
+###HTTP
+
+To be added.
 
