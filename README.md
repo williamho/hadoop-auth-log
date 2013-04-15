@@ -37,3 +37,10 @@ Default values are `authlog_in`, `authlog_out`, and `output`, respectively.
 
 To be added.
 
+
+##Output
+
+Output format:
+
+	username,host	logins,ssh-logins,failed-logins
+
