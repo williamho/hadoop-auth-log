@@ -26,8 +26,8 @@ Example:
 ###Shell script
 
 The shell script `run.sh` in the root directory can be used to perform the
-above steps. The HDFS output directory is automatically deleted by the script 
-before starting the Hadoop job.
+above steps. The local and HDFS output directories are automatically deleted by 
+the script before starting the Hadoop job.
 
 	./run.sh [hdfs-input-dir] [hdfs-output-dir] [local-output-dir]
 

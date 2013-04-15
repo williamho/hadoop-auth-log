@@ -33,14 +33,15 @@ public class AuthLogReduce extends Reducer<Text, Text, Text, Text> {
 		String daemon = key.toString().toLowerCase();
 		String line = value.toString();
 
-		if (daemon == "login") {
+		if (daemon.equals("login")) {
 			context.write(key, new Text(line)); // placeholder
 		}
-		else if (daemon == "crond") {
+		else if (daemon.equals("crond")) {
 			// Do something with line (e.g., call a function)
 		}
-
-		context.write(key, value); // placeholder
+		else if (daemon.equals("whatever else")) {
+			// etc
+		}
 	}
 
 }
