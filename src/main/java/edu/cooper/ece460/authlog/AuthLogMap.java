@@ -25,7 +25,7 @@ public class AuthLogMap extends Mapper<LongWritable, Text, Text, Text> {
 			Square brackets not always present.
 		*/
 		String line = value.toString();
-		String[] parts = line.split("\\s+",6); // whitespace
+		String[] parts = line.split("\\s+",11); // whitespace
 
 		String daemon = parts[4];
 
@@ -35,7 +35,19 @@ public class AuthLogMap extends Mapper<LongWritable, Text, Text, Text> {
 		else	
 			daemon = daemon.substring(0, daemon.length()-1); // Remove trailing :
 
-		context.write(new Text(daemon), new Text(line));
+		if (daemon.equals("login")) {
+		//System.out.println("parts is " );
+			if (parts[5].equals("LOGIN")){
+				
+				String user = parts[9];
+				String node = parts[7];
+				node = node.substring(3, node.length());
+				String outputKey = user + ", " + node;
+				context.write(new Text(outputKey), new Text("a")); // placeholder
+			}
+		}	
+		
+		//context.write(new Text(daemon), new Text(line));
 	}
 }
 

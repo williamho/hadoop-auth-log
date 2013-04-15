@@ -21,28 +21,30 @@ public class AuthLogReduce extends Reducer<Text, Text, Text, Text> {
 		throws IOException, InterruptedException 
 	{
 		String output;
+		int count = 0;
 		for (Text value : values) {
-			daemonReduce(key,value,context);
+			count += 1;
 		}
+		context.write(key, new Text(Integer.toString(count)));
 	}
 
 	/** Do something with the line based on the daemon type */
-	private void daemonReduce(Text key, Text value, Context context) 
-		throws IOException, InterruptedException 
-	{
-		String daemon = key.toString().toLowerCase();
-		String line = value.toString();
+	// private void daemonReduce(Text key, Text value, Context context) 
+		// throws IOException, InterruptedException 
+	// {
+		// String daemon = key.toString().toLowerCase();
+		// String line = value.toString();
 
-		if (daemon.equals("login")) {
-			context.write(key, new Text(line)); // placeholder
-		}
-		else if (daemon.equals("crond")) {
-			// Do something with line (e.g., call a function)
-		}
-		else if (daemon.equals("whatever else")) {
-			// etc
-		}
-	}
+		// if (daemon.equals("login")) {
+			// context.write(key, new Text(line)); // placeholder
+		// }
+		// else if (daemon.equals("crond")) {
+			// // Do something with line (e.g., call a function)
+		// }
+		// else if (daemon.equals("whatever else")) {
+			// // etc
+		// }
+	// }
 
 }
 
