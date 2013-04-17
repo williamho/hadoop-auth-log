@@ -1,0 +1,24 @@
+<div style="float:left; width:400px; padding-left:20px;">
+    <p>Analyse Auth Logs</p>
+    <form method="get" name="AuthLog" action="authlog">
+        <fieldset>
+            <legend>Search</legend>
+            <dl>
+                <label for="uesr">User</label>
+                <input type="text" name="user" value="(.*)">
+            </dl>
+            <dl>
+                <label for="node">Node</label>
+                <input type="text" name="node" value="(.*)">
+            </dl>
+            <dl>
+                <label for="filename">Data File</label>
+                <input type="text" value="output/authlog_out" name="datafile" value="">
+            </dl>
+            
+        </fieldset>
+        <div>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+</div>
