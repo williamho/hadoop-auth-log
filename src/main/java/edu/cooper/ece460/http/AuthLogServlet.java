@@ -35,7 +35,7 @@ public class AuthLogServlet extends HttpServlet {
             return;
 
         // Open file and try to find patent with that number
-        out.println("<div style='float:left; width:400px; padding-left:10px;'>");
+        out.println("<div style='float:left; padding-left:10px;'>");
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(dataFile));
@@ -62,17 +62,17 @@ public class AuthLogServlet extends HttpServlet {
             return;
         }
 
+        out.println("<table><tr><th>User</th><th>Node</th><th>Local logins</th><th>SSH logins</th><th>Failed logins</th></tr>");
         for(String foundLine : outLines){
             String[] parts = foundLine.split("\\s+",2); // Split by whitespace
             String[] parts2 = parts[0].split(",");
-            out.println("user,node,local logins,ssh logins,failed logins<br /><ul>");
-
-            out.println("<li>" +
-                        "<a href='?datafile=" + dataFile + "&user=" + parts2[0] + "&node=(.*)" +
-                        "'>" + parts2[0] + "</a>" + "," +
-                        "<a href='?datafile=" + dataFile + "&user=(.*)" + "&node=" + parts2[1] +
-                        "'>" + parts2[1] + "</a>" + "," + parts[1] + "</li>");
-            out.println("</ul>");
+            String[] parts3 = parts[1].split(",");
+            out.println("<tr>");
+            out.print("<td><a href='?datafile=" + dataFile + "&user=" + parts2[0] + "&node=(.*)" + "'>" + parts2[0] + "</a></td>");
+            out.print("<td><a href='?datafile=" + dataFile + "&user=(.*)" + "&node=" + parts2[1] + "'>" + parts2[1] + "</a></td>");
+            for (String s : parts3)
+                out.print("<td class='center'>" + s + "</td>");
+            out.println("</tr>");
         }
         out.println("</div>");
     }

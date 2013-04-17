@@ -4,3 +4,8 @@ input {
 	width:200px;
 }
 
+td.center {
+	text-align: center;
+	vertical-align: middle;
+}
+
