@@ -13,9 +13,16 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.hbase.mapreduce.TableReducer;
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
+
 /** AuthLogReduce checks the key (daemon) and calls the appropriate 
 	daemon-specific reduce function */
-public class AuthLogReduce extends Reducer<Text, Text, Text, Text> {
+public class AuthLogReduce extends TableReducer<Text, Text, ImmutableBytesWritable> {
+	public static final byte[] hbaseKey = "userhost".getBytes();
+
 	@Override
 	public void reduce(Text key, Iterable<Text> values, Context context) 
 		throws IOException, InterruptedException 
@@ -31,9 +38,14 @@ public class AuthLogReduce extends Reducer<Text, Text, Text, Text> {
 			else if (stringValue.equals("failed"))
 				failed_count++;
 		}
+		int local_login_count = login_count - ssh_count;
 
-		String outputKey = login_count-ssh_count + "," + ssh_count + "," + failed_count;
-		context.write(key, new Text(outputKey));
+		Put p = new Put(Bytes.toBytes(key.toString()));
+		p.add(hbaseKey, Bytes.toBytes("local"), Bytes.toBytes(local_login_count));
+		p.add(hbaseKey, Bytes.toBytes("ssh"), Bytes.toBytes(ssh_count));
+		p.add(hbaseKey, Bytes.toBytes("failed"), Bytes.toBytes(failed_count));
+		
+		context.write(null, p);
 	}
 }
 
