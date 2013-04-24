@@ -32,7 +32,7 @@ public class AuthLogReduce extends Reducer<Text, Text, Text, Text> {
 				failed_count++;
 		}
 
-		String outputKey = login_count + "," + ssh_count + "," + failed_count;
+		String outputKey = login_count-ssh_count + "," + ssh_count + "," + failed_count;
 		context.write(key, new Text(outputKey));
 	}
 }
