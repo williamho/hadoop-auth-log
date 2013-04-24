@@ -35,7 +35,7 @@ Default values are `authlog_in`, `authlog_out`, and `output`, respectively.
 
 ###HTTP
 
-To be added.
+	mvn jetty:run
 
 
 ##Output
