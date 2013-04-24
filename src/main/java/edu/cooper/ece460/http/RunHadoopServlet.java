@@ -42,14 +42,14 @@ public class RunHadoopServlet extends HttpServlet
 
         // Remove existing output directories
         new ProcessBuilder(
-            "hadoop", "fs", "-rmr",
-            authlog_out
-        ).start();
+                "hadoop", "fs", "-rmr",
+                authlog_out
+                ).start();
 
         Process pb = new ProcessBuilder(
-            "hadoop", "jar",
-            jar, mainClass, inputDir, authlog_out
-        ).start();
+                "hadoop", "jar",
+                jar, mainClass, inputDir, authlog_out
+                ).start();
 
         // Display output and error messages
         out.println("<div>");
@@ -66,6 +66,7 @@ public class RunHadoopServlet extends HttpServlet
         out.println("</tt></div>");
 
         // Merge output directory files
+        new ProcessBuilder("rm", outputDir+"/"+authlog_out).start();
         new ProcessBuilder("hadoop", "fs", "-getmerge", authlog_out, outputDir+"/"+authlog_out).start();
     }
 
