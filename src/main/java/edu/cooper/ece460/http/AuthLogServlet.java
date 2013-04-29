@@ -12,6 +12,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.filter.*;
+import org.apache.hadoop.hbase.util.Bytes;
+
+
 // Should probably be in a jsp
 public class AuthLogServlet extends HttpServlet {
     PrintWriter out;
@@ -22,8 +27,8 @@ public class AuthLogServlet extends HttpServlet {
         resp.setContentType("text/html");
         resp.setStatus(HttpServletResponse.SC_OK);
         String user = req.getParameter("user");
-        String node = req.getParameter("node");
-        String dataFile = req.getParameter("datafile");
+        String host = req.getParameter("host");
+        String dataTableStr = req.getParameter("datatable");
 
         out = resp.getWriter();
         out.println("<link rel='stylesheet' href='style.css' type='text/css'>");
@@ -31,50 +36,65 @@ public class AuthLogServlet extends HttpServlet {
 
         req.getRequestDispatcher("/authlog_analyse.html").include(req, resp); 
 
-        if ((user == null && node == null) || dataFile == null)
+        if ((user == null && host == null) || dataTableStr == null)
             return;
 
-        // Open file and try to find patent with that number
+        HTablePool pool = new HTablePool();
+        HTableInterface dataTable = null;
+        try{
+            dataTable = pool.getTable(dataTableStr);
+        }
+        catch(RuntimeException e){
+            out.println("Table <tt>" + dataTableStr + "</tt> not found");
+            return;
+        }
+
         out.println("<div style='float:left; padding-left:10px;'>");
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(dataFile));
-        }
-        catch (FileNotFoundException e) {
-            out.println("File <tt>" + dataFile + "</tt> not found");
-            return;
-        }
 
-        ArrayList<String> outLines = new ArrayList<String>();
-        String line;
-        while ((line = br.readLine()) != null){
-            if(line.matches(user + "," + node + "(.*)"))
-                outLines.add(line);
-        }
-        br.close();
+        Scan s = new Scan();
+        FilterList flist = new FilterList(FilterList.Operator.MUST_PASS_ALL);
+        SingleColumnValueFilter filter1 =
+            new SingleColumnValueFilter("userhost".getBytes(),
+                                        "user".getBytes(),
+                                        CompareFilter.CompareOp.EQUAL,
+                                        new RegexStringComparator(user));
+        flist.addFilter(filter1);
+        SingleColumnValueFilter filter2 =
+            new SingleColumnValueFilter("userhost".getBytes(),
+                                        "host".getBytes(),
+                                        CompareFilter.CompareOp.EQUAL,
+                                        new RegexStringComparator(host));
+        flist.addFilter(filter2);
+        s.setFilter(flist);
 
-        // Patent not found
+        ResultScanner rs = dataTable.getScanner(s);
         out.println("User:" + user);
-        out.println("Node:" + node);
-        
-        if (outLines.size() == 0) {
-            out.println("no results found <tt>" + dataFile + "</tt>");
-            return;
-        }
+        out.println("Host:" + host);
 
-        out.println("<table><tr><th>User</th><th>Node</th><th>Local logins</th><th>SSH logins</th><th>Failed logins</th></tr>");
-        for(String foundLine : outLines){
-            String[] parts = foundLine.split("\\s+",2); // Split by whitespace
-            String[] parts2 = parts[0].split(",");
-            String[] parts3 = parts[1].split(",");
+        // if (outLines.size() == 0) {
+        //     out.println("no results found <tt>" + dataTable + "</tt>");
+        //     return;
+        // }
+
+        out.println("<table><tr><th>User</th><th>Host</th><th>Local logins</th><th>SSH logins</th><th>Failed logins</th></tr>");
+        for(Result rr : rs){
+            String userString = Bytes.toString(rr.getValue("userhost".getBytes(), "user".getBytes()));
+            String hostString = Bytes.toString(rr.getValue("userhost".getBytes(), "host".getBytes()));
+            int local = Bytes.toInt(rr.getValue("userhost".getBytes(), "local".getBytes()));
+            int ssh = Bytes.toInt(rr.getValue("userhost".getBytes(), "ssh".getBytes()));
+            int failed = Bytes.toInt(rr.getValue("userhost".getBytes(), "failed".getBytes()));
+
             out.println("<tr>");
-            out.print("<td><a href='?datafile=" + dataFile + "&user=" + parts2[0] + "&node=(.*)" + "'>" + parts2[0] + "</a></td>");
-            out.print("<td><a href='?datafile=" + dataFile + "&user=(.*)" + "&node=" + parts2[1] + "'>" + parts2[1] + "</a></td>");
-            for (String s : parts3)
-                out.print("<td class='center'>" + s + "</td>");
+            out.print("<td><a href='?datatable=" + dataTableStr + "&user=" + userString + "&host=(.*)" + "'>" + userString + "</a></td>");
+            out.print("<td><a href='?datatable=" + dataTableStr + "&user=(.*)" + "&host=" + hostString + "'>" + hostString + "</a></td>");
+            out.print("<td class='center'>" + local + "</td>");
+            out.print("<td class='center'>" + ssh + "</td>");
+            out.print("<td class='center'>" + failed + "</td>");
             out.println("</tr>");
         }
         out.println("</div>");
+
+        pool.close();
     }
 }
 
