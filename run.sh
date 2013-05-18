@@ -16,4 +16,4 @@ hadoop fs -rmr testdata/authlog_out
 hadoop fs -put authlog_out testdata
 $MAHOUT_HOME/bin/mahout org.apache.mahout.clustering.syntheticcontrol.kmeans.Job
 hadoop fs -get output $OUT_PATH
-$MAHOUT_HOME/bin/mahout clusterdump -i output/clusters-*-final -o out.txt
+$MAHOUT_HOME/bin/mahout clusterdump -i output/clusters-*-final -o out.txt --pointsDir output/clusteredPoints
