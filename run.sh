@@ -10,7 +10,7 @@ rm ${OUT_PATH_LOCAL}/$OUT_PATH || true
 hadoop fs -rmr $OUT_PATH || true
 hadoop jar target/HadoopAuthLog-1.0.jar edu.cooper.ece460.authlog.HadoopAuthLog $IN_PATH $OUT_PATH
 hadoop fs -getmerge $OUT_PATH ${OUT_PATH_LOCAL}/$OUT_PATH
-./postprocess.py $OUT_PATH_LOCAL >authlog_out
+./postprocess.py $OUT_PATH_LOCAL/$OUT_PATH >authlog_out
 hadoop fs -mkdir testdata
 hadoop fs -rmr testdata/authlog_out
 hadoop fs -put authlog_out testdata
